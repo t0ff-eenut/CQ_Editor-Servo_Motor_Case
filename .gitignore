@@ -1,3 +1,4 @@
 mcp_mem0.log
-
 *.stl
+
+/__pycache__
