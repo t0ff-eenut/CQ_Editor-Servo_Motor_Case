@@ -3,11 +3,14 @@ import project_top as ptop
 body = None
 back_block_1st = None
 joint_a = None
+joint_a_debug = None
+
 back_block_2nd = None
 joint_b = None
 joint_c = None
+joint_d = None
 
-class CaseConfig:
+class DCConfig:
     body_x = 49.1
     body_y = 12.8
     body_z = 22.5
@@ -54,9 +57,17 @@ class CaseConfig:
     joint_c_y = 9
     joint_c_z = 8.7
     joint_c_pos_x = -(body_x / 2) - (joint_c_x / 2)
+    # joint_c_pos_x = -(body_x / 2) - (joint_c_x / 2) + 0.5
     joint_c_pos_y = back_block_2nd_pos_y - (18.5 - (back_block_2nd_y / 2)) - (joint_c_y / 2)
     # joint_c_pos_z = joint_b_pos_z - ((joint_b_z - joint_c_z) / 2)
     joint_c_pos_z = joint_a_pos_z - (joint_c_z - joint_b_z)
+
+    joint_d_x = joint_a_x
+    joint_d_y = joint_a_y
+    joint_d_z = joint_a_z
+    joint_d_pos_x = 0
+    joint_d_pos_y = 0
+    joint_d_pos_z = 0
 
 
 def make_body(cfg):
@@ -82,18 +93,35 @@ def make_joint_a(cfg):
         .translate((cfg.joint_a_pos_x, cfg.joint_a_pos_y, cfg.joint_a_pos_z))
     )
 
-def add_joint_holes(joint, cfg):
+def debug(joint, cfg):
     joint_get_pos = ptop.get_obj_pos(joint)
 
     hole_pos = [
-        (joint_get_pos.min.x + cfg.wing_hole_x_offset_minY_view + (cfg.wing_hole_size / 2), joint_get_pos.min.z + cfg.wing_hole_z_offset_minY_view + (cfg.wing_hole_size / 2))
+        # (joint_get_pos.min.x + cfg.wing_hole_x_offset_minY_view + (cfg.wing_hole_size / 2), joint_get_pos.min.z + cfg.wing_hole_z_offset_minY_view + (cfg.wing_hole_size / 2))
+        (joint_get_pos.center.x, joint_get_pos.center.y)
     ]
-
     return (
-        joint_get_pos
-        .faces("<Y").workplane()
+        joint
+        .faces(">Z").workplane()
+        # .move(joint_get_pos.center.x, joint_get_pos.center.y)
+        .move(hole_pos[0][0],hole_pos[0][1])
+        # .move(hole_pos[0])
+        .sphere(0.5)
+        #.line(0, 3, forConstruction=True)
+    )
+
+def add_joint_holes_a(joint, cfg):
+    joint_get_pos = ptop.get_obj_pos(joint)
+
+    hole_pos = [
+        # (joint_get_pos.min.x + cfg.wing_hole_x_offset_minY_view + (cfg.wing_hole_size / 2), joint_get_pos.min.z + cfg.wing_hole_z_offset_minY_view + (cfg.wing_hole_size / 2))
+        (joint_get_pos.center.x, joint_get_pos.center.y)
+    ]
+    return (
+        joint
+        .faces(">Z").workplane()
         .pushPoints(hole_pos)
-        .hole(cfg.wing_hole_size)
+        .cboreHole(cfg.joint_hole_head_size, cfg.joint_hole_body_size, cfg.joint_hole_body_dep)
     )
 
 def make_back_block_2nd(cfg):
@@ -120,15 +148,45 @@ def make_joint_c(cfg):
         .translate((cfg.joint_c_pos_x, cfg.joint_c_pos_y, cfg.joint_c_pos_z))
     )
 
-def case():
-    global body, back_block_1st, joint_a, back_block_2nd, joint_b, joint_c
-    cfg = CaseConfig()
+def add_joint_holes_b(joint, cfg):
+    joint_get_pos = ptop.get_obj_pos(joint)
+
+    hole_pos = [
+        # (joint_get_pos.min.x + cfg.wing_hole_x_offset_minY_view + (cfg.wing_hole_size / 2), joint_get_pos.min.z + cfg.wing_hole_z_offset_minY_view + (cfg.wing_hole_size / 2))
+        (joint_get_pos.center.x, joint_get_pos.center.y - 1.5)
+    ]
+    return (
+        joint
+        .faces(">Z").workplane()
+        .pushPoints(hole_pos)
+        .cboreHole(cfg.joint_hole_head_size, cfg.joint_hole_body_size, cfg.joint_hole_body_dep)
+    )    
+
+def make_joint_d(cfg):
+    return (
+        ptop.cq.Workplane("XY")
+        .rect(cfg.joint_d_x, cfg.joint_d_y)
+        .extrude(cfg.joint_d_z)
+        .translate((cfg.joint_d_pos_x, cfg.joint_d_pos_y, cfg.joint_d_pos_z))
+    )
+
+def dc_motor():
+    global body, back_block_1st, joint_a, back_block_2nd, joint_b, joint_c, joint_d
+    global joint_a_debug
+
+    cfg = DCConfig()
     body = make_body(cfg)
     back_block_1st = make_back_block_1st(cfg)
     joint_a = make_joint_a(cfg)
-
+    # joint_a_debug = debug(joint_a, cfg)
+    joint_a = add_joint_holes_a(joint_a, cfg)
     back_block_2nd = make_back_block_2nd(cfg)
     joint_b = make_joint_b(cfg)
+    joint_b = add_joint_holes_a(joint_b, cfg)
     joint_c = make_joint_c(cfg)
+    joint_c = add_joint_holes_b(joint_c, cfg)
+    joint_d = make_joint_d(cfg)
+    joint_d = add_joint_holes_a(joint_d, cfg)
+
     return cfg
 
