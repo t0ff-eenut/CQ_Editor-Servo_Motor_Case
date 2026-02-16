@@ -27,7 +27,10 @@ show_object(dcm.back_block_1st, options={"color": (255, 255, 255), "alpha": 0.2}
 show_object(dcm.joint_a, options={"color": (255, 255, 255), "alpha": 0.2}, name="case_joint_a")
 show_object(dcm.back_block_2nd, options={"color": (255, 255, 255), "alpha": 0.2}, name="case_back_block_2nd")
 show_object(dcm.joint_b, options={"color": (255, 255, 255), "alpha": 0.2}, name="case_joint_b")
+# show_object(dcm.joint_c_block, options={"color": (255, 255, 255), "alpha": 0.2}, name="joint_c_block")
 show_object(dcm.joint_c, options={"color": (255, 255, 255), "alpha": 0.2}, name="case_joint_c")
+show_object(dcm.front_block_1st, options={"color": (255, 255, 255), "alpha": 0.2}, name="front_block_1st")
+show_object(dcm.joint_d, options={"color": (255, 255, 255), "alpha": 0.2}, name="case_joint_d")
 
 
 
