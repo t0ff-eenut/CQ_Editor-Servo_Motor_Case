@@ -70,7 +70,7 @@ class DCConfig:
     joint_c_x = joint_b_x
     joint_c_y_margin = 3.4 - joint_hole_body_ring
     joint_c_y = joint_b_y + joint_c_y_margin
-    joint_c_z = joint_b_zs
+    joint_c_z = joint_b_z
     # joint_c_x = 5.8
     # joint_c_y = 9
     # joint_c_z = 8.7
